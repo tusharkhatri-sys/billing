@@ -1,16 +1,47 @@
-# React + Vite
+# Retail Karr 🛍️
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+**Retail Karr** is a modern, responsive Billing & Inventory Management System specifically designed for small to medium retail businesses. Built with React, Supabase, and TailwindCSS, it allows you to manage sales, stock, and customers effortlessly.
 
-Currently, two official plugins are available:
+## ✨ Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **📊 Dashboard**: Real-time overview of Sales, Orders, and Low Stock alerts.
+- **🛒 Point of Sale (POS)**: Fast billing interface with Barcode support and auto-stock updates.
+- **📦 Inventory Management**: Add, edit, and track products with automatic low-stock indicators.
+- **👥 Customer Ledger**: Maintain customer accounts, track due amounts (Udhaar), and payment history.
+- **📈 Reports**: Visual Logic for Sales Trends and Top Selling Products.
+- **🔐 Secure Access**: Role-based access with Supabase Authentication (Email/OTP).
+- **📱 Responsive Design**: Works seamlessly on Desktop, Tablet, and Mobile.
 
-## React Compiler
+## 🛠️ Tech Stack
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- **Frontend**: React.js, Vite
+- **Styling**: TailwindCSS, Framer Motion (Animations)
+- **Backend**: Supabase (PostgreSQL, Auth, Realtime)
+- **Icons**: Lucide React
+- **Charts**: Recharts
 
-## Expanding the ESLint configuration
+## 🚀 Getting Started
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+1.  **Clone the repository**
+2.  **Install dependencies**:
+    ```bash
+    npm install
+    ```
+3.  **Set up Environment Variables**:
+    Create a `.env` file and add your Supabase credentials:
+    ```env
+    VITE_SUPABASE_URL=your_supabase_url
+    VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+    ```
+4.  **Run Locally**:
+    ```bash
+    npm run dev
+    ```
+
+## 👨‍💻 Developed By
+
+**Tushar Khatri**
+- Contact: [Contact via App Login Page]
+
+---
+© 2024 Retail Karr. All rights reserved.
