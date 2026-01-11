@@ -172,8 +172,8 @@ const CustomerDetailsModal = ({ isOpen, onClose, customer, sellerProfile }) => {
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-white/5">
-                                        {invoices.map(inv => (
-                                            <tr key={inv.id} className="hover:bg-white/5 transition-colors">
+                                        {invoices.map((inv, index) => (
+                                            <tr key={inv.id || index} className="hover:bg-white/5 transition-colors">
                                                 <td className="px-4 py-4 text-white">
                                                     {new Date(inv.created_at).toLocaleDateString()}
                                                 </td>

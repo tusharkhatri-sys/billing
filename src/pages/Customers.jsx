@@ -278,7 +278,7 @@ const Customers = () => {
                                                 )}
                                             </td>
                                             <td className="px-6 py-4 text-right">
-                                                <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                <div className="flex justify-end gap-2">
                                                     <button
                                                         onClick={(e) => handleEditClick(e, cust)}
                                                         className="p-2 hover:bg-brand-500/10 text-slate-500 hover:text-brand-400 rounded-lg transition-colors"

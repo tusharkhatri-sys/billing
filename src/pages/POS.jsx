@@ -21,6 +21,7 @@ const POS = () => {
     const [searchTerm, setSearchTerm] = useState('');
 
     const [selectedCategory, setSelectedCategory] = useState('All');
+    const [mobileTab, setMobileTab] = useState('products');
 
     // Cart
     const [cart, setCart] = useState([]); // Array of { product, quantity, total }
@@ -379,21 +380,24 @@ const POS = () => {
     // -- Render --
     return (
         <AppLayout title="Billing / Point of Sale">
-            <div className="flex h-[calc(100vh-100px)] gap-4">
+            {/* Mobile Tab Toggle Only (Optional Top Bar? No, Floating Action Button is better) */}
+
+            <div className="flex h-[calc(100vh-85px)] lg:h-[calc(100vh-100px)] gap-4 relative">
 
                 {/* Left Side: Product Selector (65%) */}
-                <div className="w-[65%] flex flex-col gap-4">
+                <div className={`${mobileTab === 'cart' ? 'hidden lg:flex' : 'flex'} w-full lg:w-[65%] flex-col gap-4 flex-1 lg:h-full min-h-0`}>
                     {/* Header: Search & Categories */}
-                    <div className="flex flex-col gap-4 mb-4">
+                    <div className="flex flex-col gap-3 lg:gap-4 shrink-0">
                         <div className="glass p-3 rounded-2xl border border-white/5 flex gap-4 items-center shadow-lg shadow-black/20">
                             <div className="relative flex-1">
                                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-brand-300 w-5 h-5" />
                                 <input
                                     type="text"
                                     placeholder="Scan Barcode or Search Item..."
-                                    className="w-full bg-dark-900/80 border border-white/5 rounded-xl py-3.5 pl-12 pr-4 text-white placeholder-slate-500 focus:border-brand-500/50 focus:ring-1 focus:ring-brand-500/50 focus:outline-none transition-all"
+                                    className="w-full bg-dark-900/80 border border-white/5 rounded-xl py-3 pl-12 pr-4 text-white placeholder-slate-500 focus:border-brand-500/50 focus:ring-1 focus:ring-brand-500/50 focus:outline-none transition-all"
                                     value={searchTerm}
                                     onChange={e => setSearchTerm(e.target.value)}
+                                    // Keep focus for scanner
                                     onKeyDown={handleSearchKeyDown}
                                     autoFocus
                                 />
@@ -401,7 +405,7 @@ const POS = () => {
                         </div>
 
                         {/* Category Tabs */}
-                        <div className="flex gap-2 overflow-x-auto pb-2 no-scrollbar">
+                        <div className="flex gap-2 overflow-x-auto pb-1 no-scrollbar">
                             {categories.map(cat => (
                                 <button
                                     key={cat}
@@ -418,8 +422,8 @@ const POS = () => {
                     </div>
 
                     {/* Product Grid */}
-                    <div className="flex-1 overflow-y-auto pr-2">
-                        <motion.div layout className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4 pb-20">
+                    <div className="flex-1 overflow-y-auto pr-1 pb-20 lg:pb-0"> {/* Padding bottom for FAB on mobile */}
+                        <motion.div layout className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3 lg:gap-4 pb-20 lg:pb-0">
                             <AnimatePresence>
                                 {filteredProducts.map(product => (
                                     <motion.button
@@ -431,9 +435,8 @@ const POS = () => {
                                         whileTap={{ scale: 0.98 }}
                                         key={product.id}
                                         onClick={() => addToCart(product)}
-                                        className="relative group bg-gradient-to-br from-white/10 to-white/5 p-4 rounded-2xl border border-white/10 hover:border-brand-500/50 hover:shadow-xl hover:shadow-brand-500/10 transition-all text-left flex flex-col justify-between h-[160px] overflow-hidden"
+                                        className="relative group bg-gradient-to-br from-white/10 to-white/5 p-3 lg:p-4 rounded-2xl border border-white/10 hover:border-brand-500/50 hover:shadow-xl hover:shadow-brand-500/10 transition-all text-left flex flex-col justify-between h-[150px] lg:h-[160px] overflow-hidden"
                                     >
-                                        {/* Decorative Icon */}
                                         <div className="absolute -right-4 -top-4 opacity-[0.03] group-hover:opacity-10 transition-opacity duration-500">
                                             <Box className="w-24 h-24 rotate-12" />
                                         </div>
@@ -444,25 +447,24 @@ const POS = () => {
                                                     {product.category?.toUpperCase() || 'GENERAL'}
                                                 </span>
                                             </div>
-                                            <h3 className="font-semibold text-white text-lg leading-tight mb-1 line-clamp-2 min-h-[3.5rem] group-hover:text-brand-100 transition-colors">
+                                            <h3 className="font-semibold text-white text-sm lg:text-lg leading-tight mb-1 line-clamp-2 min-h-[2.5rem] lg:min-h-[3.5rem] group-hover:text-brand-100 transition-colors">
                                                 {product.name}
                                             </h3>
                                         </div>
 
                                         <div className="relative z-10 flex justify-between items-end mt-2 w-full">
                                             <div className="flex flex-col">
-                                                <span className="text-xs text-slate-400 font-medium mb-0.5">Price</span>
-                                                <span className="text-white font-bold text-xl tracking-tight">₹{product.price}</span>
+                                                <span className="text-[10px] lg:text-xs text-slate-400 font-medium mb-0.5">Price</span>
+                                                <span className="text-white font-bold text-lg lg:text-xl tracking-tight">₹{product.price}</span>
                                             </div>
                                             <div className={`flex flex-col items-end`}>
                                                 <span className="text-[10px] text-slate-400 font-medium mb-0.5">Stock</span>
-                                                <span className={`text-xs font-bold px-1.5 py-0.5 rounded ${product.stock > 0 ? 'bg-green-500/20 text-green-300' : 'bg-red-500/20 text-red-300'}`}>
+                                                <span className={`text-[10px] lg:text-xs font-bold px-1.5 py-0.5 rounded ${product.stock > 0 ? 'bg-green-500/20 text-green-300' : 'bg-red-500/20 text-red-300'}`}>
                                                     {product.stock} {product.unit}
                                                 </span>
                                             </div>
                                         </div>
 
-                                        {/* Hover Add Overlay */}
                                         <div className="absolute inset-0 bg-brand-500/90 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-20 backdrop-blur-[2px]">
                                             <Plus className="w-8 h-8 text-white drop-shadow-lg" />
                                         </div>
@@ -478,13 +480,41 @@ const POS = () => {
                             </div>
                         )}
                     </div>
+
+                    {/* Mobile Floating View Cart Button */}
+                    <div className="lg:hidden absolute bottom-4 left-0 right-0 px-4 z-30">
+                        {cart.length > 0 && (
+                            <button
+                                onClick={() => setMobileTab('cart')}
+                                className="w-full bg-brand-600 text-white p-4 rounded-2xl shadow-2xl flex justify-between items-center animate-in slide-in-from-bottom-4 fade-in"
+                            >
+                                <div className="flex items-center gap-3">
+                                    <div className="bg-white/20 w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm">
+                                        {cart.reduce((sum, i) => sum + i.quantity, 0)}
+                                    </div>
+                                    <span className="font-medium">View Cart</span>
+                                </div>
+                                <span className="font-bold text-lg">₹{cart.reduce((sum, i) => sum + i.total, 0)}</span>
+                            </button>
+                        )}
+                    </div>
                 </div>
 
                 {/* Right Side: Cart & Checkout (35%) */}
-                <div className="w-[35%] glass rounded-2xl border border-white/10 flex flex-col overflow-hidden bg-dark-800">
+                <div className={`${mobileTab === 'products' ? 'hidden lg:flex' : 'flex'} w-full lg:w-[35%] glass rounded-2xl border border-white/10 flex-col overflow-hidden bg-dark-800 h-full lg:h-full shrink-0 font-sans shadow-2xl lg:shadow-none z-10`}>
+
+                    {/* Mobile Back Button */}
+                    <div className="lg:hidden p-2 border-b border-white/5 bg-white/5">
+                        <button
+                            onClick={() => setMobileTab('products')}
+                            className="flex items-center gap-2 text-slate-300 hover:text-white px-2 py-1"
+                        >
+                            ← Back to Products
+                        </button>
+                    </div>
 
                     {/* Header: Sale Mode Toggle */}
-                    <div className="p-4 border-b border-white/5 bg-black/20">
+                    <div className="p-3 lg:p-4 border-b border-white/5 bg-black/20 shrink-0">
                         <div className="grid grid-cols-2 bg-dark-950/50 p-1.5 rounded-xl border border-white/5 mb-4 relative overflow-hidden">
                             {['retail', 'wholesale'].map((mode) => (
                                 <button

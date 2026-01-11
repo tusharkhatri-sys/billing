@@ -26,7 +26,17 @@ export const AuthProvider = ({ children }) => {
     const value = {
         signUp: (data) => supabase.auth.signUp(data),
         signIn: (data) => supabase.auth.signInWithPassword(data),
-        signOut: () => supabase.auth.signOut(),
+        signOut: async () => {
+            try {
+                await supabase.auth.signOut();
+            } catch (error) {
+                console.error("Error signing out:", error);
+            } finally {
+                setUser(null);
+                // Force clear local storage if needed, though supa does it
+                localStorage.removeItem('sb-hukdsojhfrlmhpuedvsd-auth-token'); // Attempt to clear
+            }
+        },
         user,
         loading
     };
