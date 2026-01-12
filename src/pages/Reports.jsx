@@ -11,9 +11,13 @@ import {
 } from 'lucide-react';
 
 import { useToast } from '../context/ToastContext';
+import { useAuth } from '../context/AuthContext';
 
 const Reports = () => {
     const { showToast } = useToast();
+    const { user } = useAuth();
+    const businessType = user?.user_metadata?.business_type || 'retail';
+
     const [activeTab, setActiveTab] = useState('sales');
     const [loading, setLoading] = useState(false);
     const [dateFilter, setDateFilter] = useState('last7days');
@@ -256,7 +260,10 @@ const Reports = () => {
                 <div className="flex border-b border-white/10">
                     <TabButton id="sales" label="Sales Summary" icon={TrendingUp} />
                     <TabButton id="inventory" label="Inventory Logic" icon={Package} />
-                    <TabButton id="ledger" label="Customer Ledger" icon={Users} />
+                    {/* Hide Ledger for Retailers */}
+                    {businessType !== 'retail' && (
+                        <TabButton id="ledger" label="Customer Ledger" icon={Users} />
+                    )}
                 </div>
 
                 {/* Content Area */}

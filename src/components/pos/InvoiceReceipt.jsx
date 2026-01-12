@@ -80,8 +80,24 @@ const InvoiceReceipt = React.forwardRef(({ invoice, sellerProfile, customer }, r
                 {/* Grand Total Paid Display */}
                 <div className="flex justify-between font-medium text-slate-600">
                     <span>Paid [{invoice.payment_method}]</span>
-                    <span>₹{invoice.cash_received ? Number(invoice.cash_received).toFixed(2) : invoice.paid_amount}</span>
+                    <span>₹{Number(invoice.cash_received || invoice.paid_amount).toFixed(2)}</span>
                 </div>
+
+                {/* Change Return Logic */}
+                {(
+                    (parseFloat(invoice.cash_received || invoice.paid_amount) -
+                        (parseFloat(invoice.total_amount) + parseFloat(invoice.previous_balance || 0))) > 0
+                ) && (
+                        <div className="flex justify-between font-bold text-black mt-1 text-xs border-t border-dashed border-slate-300 pt-1">
+                            <span>Change Return</span>
+                            <span>
+                                ₹{(
+                                    parseFloat(invoice.cash_received || invoice.paid_amount) -
+                                    (parseFloat(invoice.total_amount) + parseFloat(invoice.previous_balance || 0))
+                                ).toFixed(2)}
+                            </span>
+                        </div>
+                    )}
 
                 <div className="flex justify-between text-black uppercase mt-1 text-sm bg-slate-100 p-1 rounded">
                     <span>Total Outstanding</span>
