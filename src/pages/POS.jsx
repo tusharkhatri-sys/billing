@@ -9,6 +9,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import CheckoutModal from '../components/pos/CheckoutModal';
 import InvoiceReceipt from '../components/pos/InvoiceReceipt';
 import { optional } from 'zod';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 
 const POS = () => {
     const { user } = useAuth();
@@ -744,7 +746,7 @@ const POS = () => {
             </div>
 
             {/* Hidden Invoice Receipt for Print */}
-            <div className="print-only">
+            <div className="print-only" id="hidden-receipt">
                 {lastInvoice && (
                     <InvoiceReceipt
                         invoice={lastInvoice}
