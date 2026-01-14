@@ -170,11 +170,11 @@ const POS = () => {
 
             if (invError) throw invError;
 
-            // 3.5 Handle Previous Dues Payment with Overpayment
-            // If customer paid more than current bill, use excess to clear old invoices
-            const excessPayment = paymentData.newAdvance || 0;
+            // 3.5 Handle Previous Dues Payment
+            // Calculate how much was paid beyond the current bill (this goes to old dues + advance)
+            const paidForOldDues = Math.max(0, paymentData.paidAmount - paymentData.totalAmount);
 
-            if (excessPayment > 0 && selectedCustomer) {
+            if (paidForOldDues > 0 && selectedCustomer) {
                 // Fetch unpaid invoices (oldest first)
                 const { data: unpaidInvoices } = await supabase
                     .from('invoices')
@@ -185,7 +185,7 @@ const POS = () => {
                     .order('created_at', { ascending: true });
 
                 if (unpaidInvoices && unpaidInvoices.length > 0) {
-                    let remainingCash = excessPayment;
+                    let remainingCash = paidForOldDues;
                     let clearedAmount = 0;
 
                     for (const oldInv of unpaidInvoices) {
@@ -206,16 +206,15 @@ const POS = () => {
                         clearedAmount += payOff;
                     }
 
-                    // Update paymentData.newAdvance to reflect remaining after clearing dues
-                    paymentData.newAdvance = remainingCash;
+                    // Remaining after clearing old dues = new advance
+                    const actualNewAdvance = remainingCash;
+                    paymentData.newAdvance = actualNewAdvance;
 
-                    // Update the current invoice's advance_credited to reflect actual remaining advance
-                    if (clearedAmount > 0) {
-                        await supabase
-                            .from('invoices')
-                            .update({ advance_credited: remainingCash })
-                            .eq('id', invoice.id);
-                    }
+                    // Update the current invoice's advance_credited
+                    await supabase
+                        .from('invoices')
+                        .update({ advance_credited: actualNewAdvance })
+                        .eq('id', invoice.id);
                 }
             }
 
