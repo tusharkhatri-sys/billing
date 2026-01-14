@@ -457,20 +457,26 @@ const POS = () => {
         const { invoice, customer, paymentData } = successModal;
         if (!invoice || !customer) return;
 
+        // Validate phone
+        if (!customer.phone) {
+            showToast('Customer phone number not found', 'error');
+            return;
+        }
+
         showToast('Generating PDF...', 'loading');
 
         try {
             // Generate PDF using direct jsPDF
             const pdf = generateInvoicePDF(invoice, customer, paymentData);
             const pdfBlob = pdf.output('blob');
-            const fileName = `Invoice_${invoice.invoice_number}.pdf`;
+            const fileName = `Invoice_${invoice.full_invoice_number || invoice.invoice_number}.pdf`;
             const pdfFile = new File([pdfBlob], fileName, { type: 'application/pdf' });
 
             // Prepare Message
             const cleanPhone = customer.phone.replace(/\D/g, '').slice(-10);
             const fullPhone = `91${cleanPhone}`;
 
-            const message = `*INVOICE: #${invoice.invoice_number}*
+            const message = `*INVOICE: #${invoice.full_invoice_number || invoice.invoice_number}*
 Date: ${new Date().toLocaleDateString()}
 
 Dear *${customer.name}*,
@@ -483,21 +489,23 @@ Paid: Rs.${paymentData.paidAmount}
 
 Thank you!`;
 
+            const waUrl = `https://wa.me/${fullPhone}?text=${encodeURIComponent(message + '\n\n_(Please attach the downloaded invoice PDF)_')}`;
+
             // Attempt Native Share (Mobile)
             if (navigator.canShare && navigator.canShare({ files: [pdfFile] })) {
                 await navigator.share({
                     files: [pdfFile],
-                    title: `Invoice #${invoice.invoice_number}`,
+                    title: `Invoice #${invoice.full_invoice_number || invoice.invoice_number}`,
                     text: message
                 });
                 showToast('Shared successfully!', 'success');
             } else {
-                // Desktop Fallback: Download PDF and show "Open Chat" button
+                // Desktop: Download PDF first
                 pdf.save(fileName);
-                showToast('Invoice Downloaded!', 'success');
+                showToast('Invoice Downloaded! Opening WhatsApp...', 'success');
 
-                const waUrl = `https://wa.me/${fullPhone}?text=${encodeURIComponent(message + '\n\n_(Please attach the downloaded invoice PDF)_')}`;
-                setSuccessModal(prev => ({ ...prev, waLink: waUrl }));
+                // Open WhatsApp directly
+                window.open(waUrl, '_blank');
             }
 
         } catch (err) {
