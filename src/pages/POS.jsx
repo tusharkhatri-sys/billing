@@ -171,8 +171,8 @@ const POS = () => {
             if (invError) throw invError;
 
             // 3.5 Handle Previous Dues Payment
-            // Calculate how much was paid beyond the current bill (this goes to old dues + advance)
-            const paidForOldDues = Math.max(0, paymentData.paidAmount - paymentData.totalAmount);
+            // Use the amount paid beyond current bill to clear old invoices
+            const paidForOldDues = paymentData.paidTowardsOldDues || 0;
 
             if (paidForOldDues > 0 && selectedCustomer) {
                 // Fetch unpaid invoices (oldest first)
