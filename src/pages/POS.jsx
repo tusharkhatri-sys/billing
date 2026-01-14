@@ -468,11 +468,12 @@ const POS = () => {
         try {
             // Generate PDF using direct jsPDF
             const pdf = generateInvoicePDF(invoice, customer, paymentData);
-            const pdfBlob = pdf.output('blob');
             const fileName = `Invoice_${invoice.full_invoice_number || invoice.invoice_number}.pdf`;
-            const pdfFile = new File([pdfBlob], fileName, { type: 'application/pdf' });
 
-            // Prepare Message
+            // Download PDF first
+            pdf.save(fileName);
+
+            // Prepare WhatsApp Message
             const cleanPhone = customer.phone.replace(/\D/g, '').slice(-10);
             const fullPhone = `91${cleanPhone}`;
 
@@ -487,32 +488,18 @@ Total: Rs.${paymentData.totalAmount}
 Paid: Rs.${paymentData.paidAmount}
 *Balance Due: Rs.${paymentData.dueAmount}*
 
-Thank you!`;
+Thank you!
+_(Please check attached PDF for detailed invoice)_`;
 
-            const waUrl = `https://wa.me/${fullPhone}?text=${encodeURIComponent(message + '\n\n_(Please attach the downloaded invoice PDF)_')}`;
+            // Always open WhatsApp directly with customer's number
+            const waUrl = `https://wa.me/${fullPhone}?text=${encodeURIComponent(message)}`;
 
-            // Attempt Native Share (Mobile)
-            if (navigator.canShare && navigator.canShare({ files: [pdfFile] })) {
-                await navigator.share({
-                    files: [pdfFile],
-                    title: `Invoice #${invoice.full_invoice_number || invoice.invoice_number}`,
-                    text: message
-                });
-                showToast('Shared successfully!', 'success');
-            } else {
-                // Desktop: Download PDF first
-                pdf.save(fileName);
-                showToast('Invoice Downloaded! Opening WhatsApp...', 'success');
-
-                // Open WhatsApp directly
-                window.open(waUrl, '_blank');
-            }
+            showToast('Opening WhatsApp...', 'success');
+            window.open(waUrl, '_blank');
 
         } catch (err) {
             console.error("Share Error:", err);
-            if (err.name !== 'AbortError') {
-                showToast('Failed to share invoice', 'error');
-            }
+            showToast('Failed to share invoice', 'error');
         }
     };
 
