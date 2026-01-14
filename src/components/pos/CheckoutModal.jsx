@@ -32,22 +32,31 @@ const CheckoutModal = ({ isOpen, onClose, cartTotal, customer, previousBalance =
 
         setIsSubmitting(true);
 
-        // Calculate how much goes to current bill vs old dues
-        const paidTowardsCurrentBill = Math.min(numericReceived, cartTotal);
+        // STEP 1: Calculate what's available for payment (cash + advance)
+        const totalAvailable = numericReceived + advanceUsed;
+
+        // STEP 2: Pay current bill first
+        const paidTowardsCurrentBill = Math.min(totalAvailable, cartTotal);
         const currentBillDue = Math.max(0, cartTotal - paidTowardsCurrentBill);
-        const paidTowardsOldDues = Math.max(0, numericReceived - cartTotal);
+        const remainingAfterCurrentBill = totalAvailable - paidTowardsCurrentBill;
+
+        // STEP 3: Pay old dues with remaining
+        const paidTowardsOldDues = Math.min(remainingAfterCurrentBill, previousBalance);
+        const remainingAfterOldDues = remainingAfterCurrentBill - paidTowardsOldDues;
+
+        // STEP 4: Any remaining becomes new advance
+        const newAdvanceCredit = remainingAfterOldDues;
 
         const paymentData = {
             totalAmount: cartTotal,
-            paidAmount: paidTowardsCurrentBill, // Only what was paid towards THIS bill
+            paidAmount: paidTowardsCurrentBill, // Total paid towards THIS bill (cash + advance)
             dueAmount: currentBillDue, // Due for THIS invoice only
             paymentMethod,
             paymentStatus: currentBillDue <= 0.01 ? 'paid' : 'partial',
             cashReceived: numericReceived, // Total cash received
             paidTowardsOldDues: paidTowardsOldDues, // For clearing old invoices
-            // Advance related
-            advanceUsed: advanceUsed,
-            newAdvance: excessPayment, // Overpayment becomes advance
+            advanceUsed: advanceUsed, // Advance balance used
+            newAdvance: newAdvanceCredit, // Overpayment becomes new advance
         };
 
         await onComplete(paymentData);
